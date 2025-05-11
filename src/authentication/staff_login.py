@@ -1,68 +1,115 @@
-import json
-import os
 import uuid
+import json
+import getpass
+import os
 
-class staffmanager:
-    base_dir = os.path.dirname(os.path.abspath(__file__))
-    path = os.path.join(base_dir, '..', 'database', 'staff_data.json')
+base_dir = os.path.dirname(os.path.abspath(__file__))
+staff_file_path = os.path.join(base_dir, '..', 'database', 'staff_data.json')
 
+def is_valid_name(name):
+    return name.replace(" ", "").isalpha()
 
-    @staticmethod
-    def read_staff():
-        if not os.path.exists(staffmanager.path) or os.path.getsize(staffmanager.path) == 0:
-            return []
-        with open(staffmanager.path, 'r') as f:
-            return json.load(f)
-
-    @staticmethod
-    def write_staff(data):
-        with open(staffmanager.path, 'w') as f:
-            json.dump(data, f, indent=4)
-
-    @classmethod
-    def register_staff(cls):
-        staff_name = input("enter staff name: ")
-        staff_address = input("enter address: ")
-        staff_contact = input("enter contact number: ")
-        staff_id = str(uuid.uuid4())[:6]
-
-        staff = {
-            "staff_id": staff_id,
-            "name": staff_name,
-            "address": staff_address,
-            "contact": staff_contact,
-            "role": None
-        }
-        staff_list = cls.read_staff()
-        staff_list.append(staff)
-        cls.write_staff(staff_list)
-        print(f"staff '{staff_name}' registered successfully!")
-
-    @classmethod
-    def staff_login(cls):
-        staff_name = input("enter your name: ")
-        staff_contact = input("enter your contact number: ")
-
-        staff_list = cls.read_staff()
-        for staff in staff_list:
-            if staff["name"] == staff_name and staff["contact"] == staff_contact:
-                print(f"welcome {staff_name}, login successful!")
-                print("role:", staff.get("role", "not assigned"))
-
-                if staff["role"] is None:
-                    staff["role"] = "staff"  
-
-                cls.write_staff(staff_list)  
-                return True
-        print("login failed. incorrect details.")
+def is_valid_contact(contact):
+    if not contact.isdigit():
         return False
+    if len(set(contact)) == 1:
+        return False
+    for digit in set(contact):
+        if contact.count(digit) >= 5:
+            return False
+    return True
 
-    @classmethod
-    def list_staff(cls):
-        staff_list = cls.read_staff()
-        if not staff_list:
-            print("no staff records found.")
-            return
-        print("staff members:")
+def check_password_strength(password):
+    has_letter = False
+    has_digit = False
+    has_special = False
+    
+    for c in password:
+        if c.isalpha():
+            has_letter = True
+        elif c.isdigit():
+            has_digit = True
+        elif not c.isalnum():
+            has_special = True
+    
+    strength = 0
+    if has_letter:
+        strength += 1
+    if has_digit:
+        strength += 1
+    if has_special:
+        strength += 1
+    
+    return strength
+
+def load_staff():
+    if not os.path.exists(staff_file_path):
+        return []
+    with open(staff_file_path, "r") as file:
+        return json.load(file)
+
+def save_staff(staff):
+    staff_list = load_staff()
+    staff_list.append(staff)
+    with open(staff_file_path, "w") as file:
+        json.dump(staff_list, file, indent=4)
+
+def staff_signup():
+    print("\n--- staff sign up ---")
+    staff_id = str(uuid.uuid4())[:6]
+
+    name = input("enter staff name:- ")
+    if not is_valid_name(name):
+        print("invalid name! only letters are allowed.")
+        return
+
+    while True:
+        contact = input("enter contact number:- ")
+        if is_valid_contact(contact):
+            break
+        else:
+            print("invalid contact! only digits allowed, digits must not all be same, and no digit should repeat 5+ times.")
+
+    while True:
+        password = getpass.getpass("create a password:- ")
+        strength = check_password_strength(password)
+        if strength == 1:
+            print("weak password! use at least two types: letters, numbers, special characters.")
+        else:
+            break
+
+    role = input("enter your role (e.g. waiter, chef):- ")
+
+    staff_data = {
+        "id": staff_id,
+        "name": name,
+        "contact": contact,
+        "password": password,
+        "role": role
+    }
+
+    save_staff(staff_data)
+    print("staff registered successfully!\n")
+
+def staff_login():
+    print("\n---- staff login ----")
+    staff_list = load_staff()
+
+    if len(staff_list) == 0:
+        print("no records found! please sign up first.\n")
+        return False
+    
+    while True:
+        contact = input("enter contact number: ")
+        password = getpass.getpass("enter your password:- ")
+
+        login_successful = False
         for staff in staff_list:
-            print(f"id: {staff['staff_id']}, name: {staff['name']}, contact: {staff['contact']}, role: {staff.get('role', 'n/a')}")
+            if staff["contact"] == contact and staff["password"] == password:
+                print(f"login successful! welcome, {staff['name']}")
+                login_successful = True
+                break
+        
+        if login_successful:
+            return True
+        print("invalid contact or password! please try again.\n")

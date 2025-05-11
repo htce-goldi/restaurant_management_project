@@ -1,14 +1,10 @@
 [
     {
-        "customer_id": "c88501",
-        "name": "sunny kumar",
-        "phone": "6767676767",
-        "address": "mirganj"
-    },
-    {
-        "customer_id": "e1c7f8",
-        "name": "vishal kumar",
-        "phone": "7676767676",
+        "id": "d6d239",
+        "name": "sheetal kumari",
+        "email": "sheetal234@gmail.com",
+        "password": "sheetal@12",
+        "contact": "8908908907",
         "address": "mirganj"
     }
 ]

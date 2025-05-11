@@ -1,62 +1,130 @@
-import json
-import os
 import uuid
+import json
+import getpass
+import os
 
-class customermanager:
-    base_dir = os.path.dirname(os.path.abspath(__file__))
-    path = os.path.join(base_dir, '..', 'database', 'customer_data.json')
+base_dir = os.path.dirname(os.path.abspath(__file__))
+customer_file_path = os.path.join(base_dir, '..', 'database', 'customer_data.json')
 
+def is_valid_name(name):
+    return name.replace(" ", "").isalpha()
 
-    @staticmethod
-    def read_customers():
-        if not os.path.exists(customermanager.path) or os.path.getsize(customermanager.path) == 0:
-            return []
-        with open(customermanager.path, 'r') as f:
-            return json.load(f)
+def is_valid_contact(contact):
+    if not contact.isdigit():
+        return False
+    if len(set(contact)) == 1:
+        return False
+    for digit in set(contact):
+        if contact.count(digit) >= 5:
+            return False
+    return True
 
-    @staticmethod
-    def write_customers(data):
-        with open(customermanager.path, 'w') as f:
-            json.dump(data, f, indent=4)
+def check_password_strength(password):
+    has_letter = False
+    has_digit = False
+    has_special = False
+    
+    for c in password:
+        if c.isalpha():
+            has_letter = True
+        elif c.isdigit():
+            has_digit = True
+        elif not c.isalnum():
+            has_special = True
+    
+    strength = 0
+    if has_letter:
+        strength += 1
+    if has_digit:
+        strength += 1
+    if has_special:
+        strength += 1
+    
+    return strength
 
-    @classmethod
-    def register_customer(cls):
-        customer_name = input("enter customer Name:- ")
-        customer_phone = input("enter mobile Number:- ")
-        customer_address = input("enter address:- ")
-        customer_id = str(uuid.uuid4())[:6]
+def is_valid_email(email):
+    return "@" in email and email.endswith(".com") and not email.isdigit()
 
-        customer = {
-            "customer_id": customer_id,
-            "name": customer_name,
-            "phone": customer_phone,
-            "address": customer_address
-        }
+def is_valid_address(address):
+    return all(c.isalnum() or c.isspace() for c in address)
 
-        data = cls.read_customers()
-        data.append(customer)
-        cls.write_customers(data)
-        print(f"customer '{customer_name}' registered successfully!")
+def load_customers():
+    if not os.path.exists(customer_file_path):
+        return []
+    with open(customer_file_path, "r") as file:
+        return json.load(file)
 
-    @classmethod
-    def customer_login(cls):
-        customer_name = input("enter your name:- ")
-        customer_phone = input("enter your mobile number:- ")
+def save_customer(customer):
+    customers = load_customers()
+    customers.append(customer)
+    with open(customer_file_path, "w") as file:
+        json.dump(customers, file, indent=4)
 
-        data = cls.read_customers()
-        for customer in data:
-            if customer["name"] == customer_name and customer["phone"] == customer_phone:
-                print(f"welcome {customer_name}, login successful!")
-                return True
-        print("login failed! incorrect credentials.")
+def customer_signup():
+    print("\n---- customer sign up ----")
+    customer_id = str(uuid.uuid4())[:6]
+
+    name = input("enter customer name: ")
+    if not is_valid_name(name):
+        print("invalid name! only letters are allowed.")
+        return
+
+    email = input("enter email:- ")
+    if not is_valid_email(email):
+        print("invalid email! must contain '@.com' and not be all digits.")
+        return
+
+    while True:
+        password = getpass.getpass("create a password:- ")
+        strength = check_password_strength(password)
+        if strength == 1:
+            print("weak password! use at least two types: letters, numbers, special characters.")
+        else:
+            break
+
+    while True:
+        contact = input("enter contact number:- ")
+        if is_valid_contact(contact):
+            break
+        else:
+            print("invalid contact! only digits allowed, digits must not all be same, and no digit should repeat 5+ times.")
+
+    address = input("enter address:- ")
+    if not is_valid_address(address):
+        print("invalid address! no special characters allowed.")
+        return
+
+    customer_data = {
+        "id": customer_id,
+        "name": name,
+        "email": email,
+        "password": password,
+        "contact": contact,
+        "address": address
+    }
+
+    save_customer(customer_data)
+    print("customer registered successfully!\n")
+
+def customer_login():
+    print("\n---- customer login ----")
+    customers = load_customers()
+    
+    if len(customers) == 0:
+        print("no records found! please sign up first.\n")
         return False
 
-    @classmethod
-    def show_customers(cls):
-        customers = cls.read_customers()
-        if not customers:
-            print("no customers found.")
-        else:
-            print("customer List:- ")
-            for customer in customers:
-                print(f"id: {customer['customer_id']}, name: {customer['name']}, phone: {customer['phone']}")
+    while True:
+        email = input("enter email:- ")
+        password = getpass.getpass("enter password:- ")
+
+        login_successful = False
+        for customer in customers:
+            if customer["email"] == email and customer["password"] == password:
+                print(f"login successful! welcome, {customer['name']}")
+                login_successful = True
+                break
+        
+        if login_successful:
+            return True
+        print("invalid email or password! please try again.\n")

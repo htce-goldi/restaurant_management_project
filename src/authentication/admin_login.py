@@ -1,96 +1,128 @@
-import json
-import os
 import uuid
+import json
+import getpass
+import os
 
-class adminmanager:
-    base_dir = os.path.dirname(os.path.abspath(__file__))
-    admin_file = os.path.join(base_dir, '..', 'database', 'admin_data.json')
+base_dir = os.path.dirname(os.path.abspath(__file__))
+admin_file_path = os.path.join(base_dir, '..', 'database', 'admin_data.json')
 
-    @staticmethod
-    def read_json(file_path):
-        if not os.path.exists(file_path) or os.path.getsize(file_path) == 0:
-            return []
-        with open(file_path, 'r') as f:
-            return json.load(f)
+def is_valid_name(name):
+    return name.replace(" ", "").isalpha()
 
-    @staticmethod
-    def write_json(file_path, data):
-        os.makedirs(os.path.dirname(file_path), exist_ok=True)
-        with open(file_path, 'w') as f:
-            json.dump(data, f, indent=4)
+def is_valid_email(email):
+    return "@" in email and email.endswith(".com") and not email.isdigit()
 
-    @classmethod
-    def register_admin(cls):
-        print("\n--- register admin ---")
-        admin_name = input("admin name:- ")
-        admin_address = input("enter your address:- ")
-        admin_contact = input("enter your contact number:- ")
+def is_valid_contact(contact):
+    if not contact.isdigit():
+        return False
+    if len(set(contact)) == 1:
+        return False
+    for digit in set(contact):
+        if contact.count(digit) >= 5:
+            return False
+    return True
 
-        if not admin_contact.isdigit() or len(admin_contact) != 10:
-            print("invalid contact number. must be exactly 10 digits.")
-            return
+def is_valid_address(address):
+    return all(c.isalnum() or c.isspace() for c in address)
 
-        admin_id = str(uuid.uuid4())[:6]
+def check_password_strength(password):
+    has_letter = False
+    has_digit = False
+    has_special = False
 
-        admin = {
-            "admin_id": admin_id,
-            "name": admin_name,
-            "address": admin_address,
-            "contact": admin_contact
-        }
+    for c in password:
+        if c.isalpha():
+            has_letter = True
+        elif c.isdigit():
+            has_digit = True
+        elif not c.isalnum():
+            has_special = True
 
-        admin_list = cls.read_json(cls.admin_file)
-        admin_list.append(admin)
-        cls.write_json(cls.admin_file, admin_list)
-        print("admin registered successfully.\n")
+    strength = 0
+    if has_letter:
+        strength += 1
+    if has_digit:
+        strength += 1
+    if has_special:
+        strength += 1
 
-    @classmethod
-    def admin_login(cls):
-        print("\n--- admin login ---")
-        name = input("enter your name: ")
-        contact = input("enter your contact number: ")
+    return strength
 
-        admins = cls.read_json(cls.admin_file)
-        for admin in admins:
-            if admin["name"] == name and admin["contact"] == contact:
-                print("login successful.\n")
-                return True
-        print("login failed.\n")
+def load_admins():
+    if not os.path.exists(admin_file_path) or os.path.getsize(admin_file_path) == 0:
+        return []
+    with open(admin_file_path, "r") as file:
+        return json.load(file)
+
+def save_admin(admin):
+    admins = load_admins()
+    admins.append(admin)
+    with open(admin_file_path, "w") as file:
+        json.dump(admins, file, indent=4)
+
+def admin_signup():
+    print("\n---- admin sign up ----")
+    admin_id = str(uuid.uuid4())[:6]
+
+    name = input("enter admin name:- ")
+    if not is_valid_name(name):
+        print("invalid name! only letters are allowed.")
+        return
+
+    email = input("enter email:- ")
+    if not is_valid_email(email):
+        print("invalid email! must contain '@.com' and not be all digits.")
+        return
+
+    while True:
+        password = getpass.getpass("create a password:- ")
+        strength = check_password_strength(password)
+        if strength < 2:
+            print("weak password! use at least two types: letters, numbers, special characters.")
+        else:
+            break
+
+    while True:
+        contact = input("enter contact number:- ")
+        if is_valid_contact(contact):
+            break
+        else:
+            print("invalid contact! only digits allowed, digits must not all be same, and no digit should repeat 5+ times.")
+
+    address = input("enter address:- ")
+    if not is_valid_address(address):
+        print("invalid address! no special characters allowed.")
+        return
+
+    admin_data = {
+        "id": admin_id,
+        "name": name,
+        "email": email,
+        "password": password,
+        "contact": contact,
+        "address": address
+    }
+
+    save_admin(admin_data)
+    print("admin registered successfully!\n")
+
+def admin_login():
+    print("\n---- admin login ----")
+    
+    if not os.path.exists(admin_file_path) or os.path.getsize(admin_file_path) == 0:
+        print("no records found! please sign up first.\n")
         return False
 
-    @classmethod
-    def show_all_admins(cls):
-        print("\n--- registered admins ---")
-        admins = cls.read_json(cls.admin_file)
-        if not admins:
-            print("no admin records found.\n")
-        else:
-            for admin in admins:
-                print("id:", admin["admin_id"])
-                print("name:", admin["name"])
-                print("contact:", admin["contact"])
-                print("-" * 30)
+    email = input("enter email:- ")
+    password = getpass.getpass("enter password:- ")
 
-    @classmethod
-    def assign_staff_role(cls):
-        print("\n--- assign role to staff ---")
-        staff_data = cls.read_json(cls.staff_file)
-        if not staff_data:
-            print("no staff available to assign role.\n")
-            return
-
-        print("available staff members:")
-        for count, staff in enumerate(staff_data, start=1):
-            print(str(count) + ". " + staff["name"] + " (id: " + staff["staff_id"] + ")")
-
-        try:
-            option = int(input("choose staff number to assign role: ")) - 1
-            if 0 <= option < len(staff_data):
-                role = input("enter role (e.g., manager, chef): ")
-                staff_data[option]["role"] = role
-                cls.write_json(cls.staff_file, staff_data)
-                print("role assigned successfully.\n")
-            else:
-                print("invalid staff selection.\n")
-        except ValueError:
-            print("invalid input. please enter a number.\n")
+    admins = load_admins()
+    
+    for admin in admins:
+        if admin["email"] == email:
+            if admin["password"] == password:
+                print(f"login successful! welcome, {admin['name']}")
+                return True
+    
+    print("invalid email or password!\n")
+    return False

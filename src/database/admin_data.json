@@ -1,14 +1,10 @@
 [
     {
-        "admin_id": "30a2aa",
+        "id": "d3b9ba",
         "name": "goldi kumari",
-        "address": "chanawe",
-        "contact": "0909090909"
-    },
-    {
-        "admin_id": "880932",
-        "name": "srishti",
-        "address": "mirganj",
-        "contact": "9090909090"
+        "email": "goldi123@gmail.com",
+        "password": "goldi54",
+        "contact": "7091803954",
+        "address": "bihar"
     }
 ]

@@ -1,90 +1,36 @@
-from authentication.admin_login import adminmanager
-from authentication.staff_login import staffmanager
-from authentication.customer_login import customermanager
+from authentication.admin_login import admin_signup, admin_login
+from authentication.customer_login import customer_signup, customer_login
+from authentication.staff_login import staff_signup, staff_login
 
-def menu():
+def main():
     while True:
-        print("\n======= Restaurant Management System =======")
-        print("\n1. for Admin")
-        print("2. for Staff")
-        print("3. for Customer")
-        print("4. for Exit")
+        print("\n=== Restaurant Management System ===")
+        print("Press 1. For Admin Sign Up")
+        print("Press 2. For Admin Login")
+        print("Press 3. For Customer Sign Up")
+        print("Press 4. For Customer Login")
+        print("Press 5. For Staff Sign Up")
+        print("Press 6. For Staff Login")
+        print("Press 7. For Exiting\n")
 
-        option = input("select your any option:- ")
+        Option = input("Please enter your any option:- ")
 
-        if option == '1':
-            admin_dashboard()
-        elif option == '2':
-            staff_dashboard()
-        elif option == '3':
-            customer_dashboard()
-        elif option == '4':
-            print("thank you! exiting....")
+        if Option == "1":
+            admin_signup()
+        elif Option == "2":
+            admin_login()
+        elif Option == "3":
+            customer_signup()
+        elif Option == "4":
+            customer_login()
+        elif Option == "5":
+            staff_signup()
+        elif Option == "6":
+            staff_login()
+        elif Option == "7":
+            print("Exiting... Thank you!")
             break
         else:
-            print("invalid option. please try again.")
+            print("Invalid choice! Please select a valid option.")
 
-def admin_dashboard():
-    while True:
-        print("\n---- Admin Dashboard ----")
-        print("\nPress 1 For Register Admin")
-        print("Press 2 For View All Admins")
-        print("Press 3 For Assign Role to Staff")
-        print("Press 4 For Back to Main Menu")
-
-        option = input("please select any option:- ")
-
-        if option == '1':
-            adminmanager.register_admin()
-        elif option == '2':
-            adminmanager.show_all_admins() 
-        elif option == '3':
-            adminmanager.assign_staff_role()
-        elif option == '4':
-            break  
-        else:
-            print("invalid option. please try again.")
-
-def staff_dashboard():
-    while True:
-        print("\n---- Staff Dashboard ----")
-        print("Press 1. For Register Staff")
-        print("Press 2. For Staff Login")
-        print("Press 3. For View All Staff")
-        print("Press 4. For Back to Main Menu")
-
-        option = input("select your any option:- ")
-
-        if option == '1':
-            staffmanager.register_staff()
-        elif option == '2':
-            staffmanager.staff_login()
-        elif option == '3':
-            staffmanager.list_staff()
-        elif option == '4':
-            break
-        else:
-            print("invalid input. please try again.")
-
-def customer_dashboard():
-    while True:
-        print("\n---- Customer Dashboard ----")
-        print("Press 1. For Register Customer")
-        print("Press 2. For Customer Login")
-        print("Press 3. For View All Customers")
-        print("Press 4. For Back to Main Menu")
-
-        option = input("please enter your option:- ")
-
-        if option == '1':
-            customermanager.register_customer()
-        elif option == '2':
-            customermanager.customer_login()
-        elif option == '3':
-            customermanager.show_customers()
-        elif option == '4':
-            break
-        else:
-            print("invalid option. please try again.")
-            
-menu()
+main()
