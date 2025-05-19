@@ -1,16 +1,16 @@
-import uuid
 import json
+import uuid
 import getpass
 import os
 
 base_dir = os.path.dirname(os.path.abspath(__file__))
-customer_file_path = os.path.join(base_dir, '..', 'database', 'customer_data.json')
+customer_file_path = os.path.join(base_dir, '..', 'database', 'customers.json')
 
 def is_valid_name(name):
     return name.replace(" ", "").isalpha()
 
 def is_valid_contact(contact):
-    if not contact.isdigit():
+    if not contact.isdigit() or len(contact) != 10:
         return False
     if len(set(contact)) == 1:
         return False
@@ -49,7 +49,7 @@ def is_valid_address(address):
     return all(c.isalnum() or c.isspace() for c in address)
 
 def load_customers():
-    if not os.path.exists(customer_file_path):
+    if not os.path.exists(customer_file_path) or os.path.getsize(customer_file_path) == 0:
         return []
     with open(customer_file_path, "r") as file:
         return json.load(file)
@@ -61,37 +61,37 @@ def save_customer(customer):
         json.dump(customers, file, indent=4)
 
 def customer_signup():
-    print("\n---- customer sign up ----")
+    print("\n---- Customer Sign Up ----")
     customer_id = str(uuid.uuid4())[:6]
 
-    name = input("enter customer name: ")
+    name = input("Enter customer name: ")
     if not is_valid_name(name):
-        print("invalid name! only letters are allowed.")
+        print("Invalid name! Only letters are allowed.")
         return
 
-    email = input("enter email:- ")
+    email = input("Enter email: ")
     if not is_valid_email(email):
-        print("invalid email! must contain '@.com' and not be all digits.")
+        print("Invalid email! Must contain '@' and end with '.com' and not be all digits.")
         return
 
     while True:
-        password = getpass.getpass("create a password:- ")
+        password = getpass.getpass("Create a password: ")
         strength = check_password_strength(password)
-        if strength == 1:
-            print("weak password! use at least two types: letters, numbers, special characters.")
+        if strength < 2:
+            print("Weak password! Use at least two types: letters, numbers, special characters.")
         else:
             break
 
     while True:
-        contact = input("enter contact number:- ")
+        contact = input("Enter contact number: ")
         if is_valid_contact(contact):
             break
         else:
-            print("invalid contact! only digits allowed, digits must not all be same, and no digit should repeat 5+ times.")
+            print("Invalid contact! Must be 10 digits, not all same, and no digit repeated 5+ times.")
 
-    address = input("enter address:- ")
+    address = input("Enter address: ")
     if not is_valid_address(address):
-        print("invalid address! no special characters allowed.")
+        print("Invalid address! No special characters allowed.")
         return
 
     customer_data = {
@@ -104,27 +104,45 @@ def customer_signup():
     }
 
     save_customer(customer_data)
-    print("customer registered successfully!\n")
+    print("Customer registered successfully!\n")
+
 
 def customer_login():
-    print("\n---- customer login ----")
+    print("\n---- Customer Login ----")
     customers = load_customers()
     
     if len(customers) == 0:
-        print("no records found! please sign up first.\n")
+        print("No records found! Please sign up first.\n")
         return False
 
     while True:
-        email = input("enter email:- ")
-        password = getpass.getpass("enter password:- ")
+        email = input("Enter email: ")
+        password = getpass.getpass("Enter password: ")
 
-        login_successful = False
         for customer in customers:
             if customer["email"] == email and customer["password"] == password:
-                print(f"login successful! welcome, {customer['name']}")
-                login_successful = True
-                break
+                print(f"Login successful! Welcome, {customer['name']}")
+                
+                return True
         
-        if login_successful:
-            return True
-        print("invalid email or password! please try again.\n")
+        print("Invalid email or password! Please try again.\n")
+
+def customer_auth_menu():
+    while True:
+        print("\n--- Customer dashboard ---")
+        print("1. Sign Up")
+        print("2. Login")
+        print("3. Back to Main Menu")
+        choice = input("Enter your choice: ")
+
+        if choice == "1":
+            customer_signup()
+        elif choice == "2":
+            logged_in = customer_login()
+            if logged_in:
+                continue 
+        elif choice == "3":
+            print("Returning to main menu...\n")
+            break
+        else:
+            print("Invalid choice! Try again.\n")

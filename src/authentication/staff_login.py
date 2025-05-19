@@ -1,29 +1,31 @@
-import uuid
 import json
+import uuid
 import getpass
 import os
+from datetime import datetime
 
 base_dir = os.path.dirname(os.path.abspath(__file__))
-staff_file_path = os.path.join(base_dir, '..', 'database', 'staff_data.json')
+staff_file_path = os.path.join(base_dir, '..', 'database', 'staff.json')
 
 def is_valid_name(name):
     return name.replace(" ", "").isalpha()
 
+def is_valid_email(email):
+    return "@" in email and email.endswith(".com")
+
 def is_valid_contact(contact):
-    if not contact.isdigit():
-        return False
-    if len(set(contact)) == 1:
-        return False
-    for digit in set(contact):
-        if contact.count(digit) >= 5:
-            return False
-    return True
+    return (
+        contact.isdigit() and 
+        len(contact) == 10 and 
+        len(set(contact)) != 1 and 
+        all(contact.count(d) < 5 for d in set(contact))
+    )
 
 def check_password_strength(password):
     has_letter = False
     has_digit = False
     has_special = False
-    
+
     for c in password:
         if c.isalpha():
             has_letter = True
@@ -31,85 +33,105 @@ def check_password_strength(password):
             has_digit = True
         elif not c.isalnum():
             has_special = True
+
     
-    strength = 0
-    if has_letter:
-        strength += 1
-    if has_digit:
-        strength += 1
-    if has_special:
-        strength += 1
-    
-    return strength
+        if (has_letter + has_digit + has_special) >= 2:
+            return True
+
+    return (has_letter + has_digit + has_special) >= 2
 
 def load_staff():
-    if not os.path.exists(staff_file_path):
+    if not os.path.exists(staff_file_path) or os.path.getsize(staff_file_path) == 0:
         return []
     with open(staff_file_path, "r") as file:
         return json.load(file)
 
-def save_staff(staff):
-    staff_list = load_staff()
-    staff_list.append(staff)
+def save_staff(staff_list):
     with open(staff_file_path, "w") as file:
         json.dump(staff_list, file, indent=4)
 
-def staff_signup():
-    print("\n--- staff sign up ---")
-    staff_id = str(uuid.uuid4())[:6]
 
-    name = input("enter staff name:- ")
+def staff_signup():
+    print("\n---- Staff Sign Up ----")
+
+    name = input("Enter name: ")
     if not is_valid_name(name):
-        print("invalid name! only letters are allowed.")
+        print("Invalid name! Only letters allowed.")
+        return
+
+    email = input("Enter email: ")
+    if not is_valid_email(email):
+        print("Invalid email! Must contain '@' and end with '.com'.")
+        return
+
+    all_staff = load_staff()
+    if any(staff["email"] == email for staff in all_staff):
+        print("Email already registered. Please login.")
         return
 
     while True:
-        contact = input("enter contact number:- ")
-        if is_valid_contact(contact):
+        password = getpass.getpass("Create a password: ")
+        if check_password_strength(password):
             break
-        else:
-            print("invalid contact! only digits allowed, digits must not all be same, and no digit should repeat 5+ times.")
+        print("Weak password! Use a mix of letters, numbers, and symbols.")
 
-    while True:
-        password = getpass.getpass("create a password:- ")
-        strength = check_password_strength(password)
-        if strength == 1:
-            print("weak password! use at least two types: letters, numbers, special characters.")
-        else:
-            break
+    contact = input("Enter contact number: ")
+    if not is_valid_contact(contact):
+        print("Invalid contact number! Must be 10 digits and not all same.")
+        return
 
-    role = input("enter your role (e.g. waiter, chef):- ")
+    role = input("Enter role (e.g., waiter, chef): ").strip()
 
     staff_data = {
-        "id": staff_id,
+        "id": str(uuid.uuid4())[:8],
         "name": name,
-        "contact": contact,
+        "email": email,
         "password": password,
-        "role": role
+        "contact": contact,
+        "role": role,
+        "date_joined": datetime.now().strftime("%Y-%m-%d")
     }
 
-    save_staff(staff_data)
-    print("staff registered successfully!\n")
+    all_staff.append(staff_data)
+    save_staff(all_staff)
+    print("Staff registered successfully!\n")
 
 def staff_login():
-    print("\n---- staff login ----")
-    staff_list = load_staff()
+    print("\n---- Staff Login ----")
+    all_staff = load_staff()
 
-    if len(staff_list) == 0:
-        print("no records found! please sign up first.\n")
-        return False
-    
+    if not all_staff:
+        print("No staff records found. Please sign up first.\n")
+        return None
+
+    email = input("Enter email: ")
+    password = getpass.getpass("Enter password: ")
+
+    for staff in all_staff:
+        if staff["email"] == email and staff["password"] == password:
+            print(f"Login successful! Welcome, {staff['name']}")
+            return staff["role"]
+
+    print("Invalid email or password.\n")
+    return None
+
+def staff_auth_menu():
     while True:
-        contact = input("enter contact number: ")
-        password = getpass.getpass("enter your password:- ")
+        print("\n--- Staff Authentication ---")
+        print("1. Sign Up")
+        print("2. Login")
+        print("3. Back to Main Menu")
 
-        login_successful = False
-        for staff in staff_list:
-            if staff["contact"] == contact and staff["password"] == password:
-                print(f"login successful! welcome, {staff['name']}")
-                login_successful = True
-                break
-        
-        if login_successful:
-            return True
-        print("invalid contact or password! please try again.\n")
+        choice = input("Enter your choice: ")
+
+        if choice == '1':
+            staff_signup()
+        elif choice == '2':
+            role = staff_login()
+            if role:
+                return role  
+        elif choice == '3':
+            print("Returning to main menu...\n")
+            return None
+        else:
+            print("Invalid choice! Please try again.\n")
