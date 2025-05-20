@@ -64,7 +64,7 @@ def admin_signup():
     admins = load_admins()
     if admins:
         print("Admin already registered! Only one admin allowed.\n")
-        return False  # Signup not allowed
+        return False  
 
     print("\n---- Admin Sign Up ----")
     admin_id = str(uuid.uuid4())[:6]
@@ -135,35 +135,23 @@ def admin_login():
 
 def admin_auth_menu():
     while True:
-        admins = load_admins()
         print("\n--- Admin Authentication ---")
-        if admins:
-         
-            print("1. Login")
-            print("2. Back to Main Menu")
-            choice = input("Enter your choice: ")
+        print("1. Sign Up")
+        print("2. Login")
+        print("3. Back to Main Menu")
 
-            if choice == "1":
-                if admin_login():
-                    print("You have logged out from admin panel.\n")
-            elif choice == "2":
-                print("Returning to main menu...\n")
-                break
+        choice = input("Enter your choice: ")
+
+        if choice == "1":
+            if admin_signup():
+                print("Please login now.\n")
             else:
-                print("Invalid choice! Try again.\n")
+                print("Signup failed or admin already exists.\n")
+        elif choice == "2":
+            if admin_login():
+                pass  # आगे dashboard या menu जा सकते हैं
+        elif choice == "3":
+            print("Returning to main menu...\n")
+            break
         else:
-          
-            print("1. Sign Up (Only one admin allowed)")
-            print("2. Back to Main Menu")
-            choice = input("Enter your choice: ")
-
-            if choice == "1":
-                if admin_signup():
-                    print("Please login now.\n")
-                else:
-                    print("Signup failed or admin already exists.\n")
-            elif choice == "2":
-                print("Returning to main menu...\n")
-                break
-            else:
-                print("Invalid choice! Try again.\n")
+            print("Invalid choice! Try again.\n")
