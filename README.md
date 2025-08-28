@@ -1,1 +1,0 @@
-# restaurant_management_project
