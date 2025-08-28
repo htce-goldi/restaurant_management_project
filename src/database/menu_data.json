@@ -1,0 +1,88 @@
+ {
+        "breakfast": [
+           
+            {"name": "Idli Sambhar", "qty": "2 pcs", "price": 40, "stock": 30},
+            {"name": "Masala Dosa", "qty": "1 plate", "price": 60, "stock": 20},
+            {"name": "Poha", "qty": "1 bowl", "price": 30, "stock": 25},
+            {"name": "Aloo Paratha", "qty": "1 plate", "price": 50, "stock": 20},
+            {"name": "Upma", "qty": "1 bowl", "price": 35, "stock": 30},
+            {"name": "Puri Bhaji", "qty": "1 plate", "price": 55, "stock": 20},
+            {"name": "Egg Sandwich", "qty": "1 sandwich", "price": 45, "stock": 15},
+            {"name": "Vegetable Cutlet", "qty": "2 pcs", "price": 40, "stock": 20},
+            {"name": "Chole Kulche", "qty": "1 plate", "price": 60, "stock": 25},
+            {"name": "Bread Butter", "qty": "2 slices", "price": 20, "stock": 30}
+        ],
+        "lunch": [
+            {"name": "Thali Veg", "qty": "1 thali", "price": 120, "stock": 20},
+            {"name": "Chicken Curry", "qty": "1 plate", "price": 150, "stock": 15},
+            {"name": "Paneer Butter Masala", "qty": "1 plate", "price": 130, "stock": 15},
+            {"name": "Veg Biryani", "qty": "1 plate", "price": 100, "stock": 20},
+            {"name": "Dal Fry", "qty": "1 bowl", "price": 70, "stock": 25},
+            {"name": "Roti", "qty": "1 pc", "price": 10, "stock": 100},
+            {"name": "Jeera Rice", "qty": "1 plate", "price": 80, "stock": 20},
+            {"name": "Mix Veg", "qty": "1 plate", "price": 90, "stock": 20},
+            {"name": "Fish Curry", "qty": "1 plate", "price": 160, "stock": 10},
+            {"name": "Curd", "qty": "1 bowl", "price": 25, "stock": 25}
+        ],
+        "dinner": [
+            {"name": "Butter Naan", "qty": "1 pc", "price": 20, "stock": 50},
+            {"name": "Chicken Biryani", "qty": "1 plate", "price": 160, "stock": 15},
+            {"name": "Paneer Tikka", "qty": "6 pcs", "price": 140, "stock": 10},
+            {"name": "Kadhai Chicken", "qty": "1 plate", "price": 170, "stock": 12},
+            {"name": "Tandoori Roti", "qty": "1 pc", "price": 15, "stock": 50},
+            {"name": "Dal Makhani", "qty": "1 bowl", "price": 90, "stock": 20},
+            {"name": "Malai Kofta", "qty": "1 plate", "price": 110, "stock": 10},
+            {"name": "Egg Curry", "qty": "1 plate", "price": 100, "stock": 15},
+            {"name": "Veg Kofta", "qty": "1 plate", "price": 95, "stock": 15},
+            {"name": "Fried Rice", "qty": "1 plate", "price": 90, "stock": 20}
+        ],
+        "snacks": [
+            {"name":  "Samosa", "qty": "1 pc", "price": 15, "stock": 50},
+            {"name": "Pakora", "qty": "1 plate", "price": 40, "stock": 30},
+            {"name": "French Fries", "qty": "1 plate", "price": 60, "stock": 25},
+            {"name": "Veg Puff", "qty": "1 pc", "price": 20, "stock": 30},
+            {"name": "Spring Roll", "qty": "2 pcs", "price": 50, "stock": 20},
+            {"name": "Aloo Tikki", "qty": "1 pc", "price": 25, "stock": 30},
+            {"name": "Cheese Balls", "qty": "5 pcs", "price": 70, "stock": 15},
+            {"name": "Cutlet", "qty": "1 pc", "price": 30, "stock": 25},
+            {"name": "Nachos", "qty": "1 bowl", "price": 60, "stock": 20},
+            {"name": "Bread Pakora", "qty": "1 pc", "price": 20, "stock": 25}
+        ],
+        "drinks": [
+            {"name": "Lassi", "qty": "1 glass", "price": 40, "stock": 20},
+            {"name": "Cold Coffee", "qty": "1 glass", "price": 50, "stock": 20},
+            {"name": "Tea", "qty": "1 cup", "price": 15, "stock": 40},
+            {"name": "Coffee", "qty": "1 cup", "price": 20, "stock": 40},
+            {"name": "Buttermilk", "qty": "1 glass", "price": 25, "stock": 30},
+            {"name": "Mango Shake", "qty": "1 glass", "price": 60, "stock": 15},
+            {"name": "Banana Shake", "qty": "1 glass", "price": 55, "stock": 15},
+            {"name": "Rose Milk", "qty": "1 glass", "price": 45, "stock": 20},
+            {"name": "Water Bottle", "qty": "500ml", "price": 20, "stock": 50},
+            {"name": "Masala Soda", "qty": "1 glass", "price": 30, "stock": 25}
+        ],
+        "soft drinks": [
+            {"name": "Coca Cola", "qty": "250ml", "price": 25, "stock": 40},
+            {"name": "Pepsi", "qty": "250ml", "price": 25, "stock": 40},
+            {"name": "Sprite", "qty": "250ml", "price": 25, "stock": 35},
+            {"name": "Fanta", "qty": "250ml", "price": 25, "stock": 35},
+            {"name": "Thumbs Up", "qty": "250ml", "price": 25, "stock": 30},
+            {"name": "7UP", "qty": "250ml", "price": 25, "stock": 30},
+            {"name": "Limca", "qty": "250ml", "price": 25, "stock": 25},
+            {"name": "Appy Fizz", "qty": "250ml", "price": 30, "stock": 20},
+            {"name": "Mountain Dew", "qty": "250ml", "price": 25, "stock": 25},
+            {"name": "Slice", "qty": "250ml", "price": 25, "stock": 25}
+        ],
+        "desserts": [
+            {"name": "Gulab Jamun", "qty": "2 pcs", "price": 40, "stock": 20},
+            {"name": "Rasgulla", "qty": "2 pcs", "price": 40, "stock": 20},
+            {"name": "Ice Cream", "qty": "1 scoop", "price": 30, "stock": 30},
+            {"name": "Brownie", "qty": "1 pc", "price": 50, "stock": 15},
+            {"name": "Cake Slice", "qty": "1 slice", "price": 40, "stock": 20},
+            {"name": "Kheer", "qty": "1 bowl", "price": 35, "stock": 15},
+            {"name": "Halwa", "qty": "1 bowl", "price": 30, "stock": 15},
+            {"name": "Custard", "qty": "1 bowl", "price": 30, "stock": 15},
+            {"name": "Fruit Salad", "qty": "1 bowl", "price": 45, "stock": 15},
+            {"name": "Chocolate Mousse", "qty": "1 cup", "price": 55, "stock": 10}
+        ]
+    }
+    
